@@ -29,6 +29,14 @@ public class DSArray<E> implements FiniteContainer<E> {
             n++;
     }
 
+    public void modify(int index, E e) {
+        if (index < 0 || index >= n) {
+            return;
+        }
+
+        elems[index] = e;
+    }
+
     public void addAll(E[] elems) {
         for (E e : elems) {
             add(e);
