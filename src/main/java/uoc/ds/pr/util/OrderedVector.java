@@ -42,10 +42,6 @@ public class OrderedVector<E> extends FiniteLinkedList<E> {
     }
 
     public E delete(E elem) {
-        var pos = find(elem);
-        if (pos == null)
-            return null;
-
-        return super.delete(pos);
+        return find(elem).map(super::delete).orElse(null);
     }
 }

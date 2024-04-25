@@ -1,16 +1,13 @@
 package uoc.ds.pr.util;
 
 import edu.uoc.ds.adt.sequential.FiniteContainer;
-import edu.uoc.ds.adt.sequential.Queue;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
-
-import java.util.Arrays;
 
 public class DSArray<E> implements FiniteContainer<E> {
     public static final int DEFAULT_CAPACITY = 20;
 
-    private E[] elems;
+    private final E[] elems;
     private int n;
 
     public DSArray() {
