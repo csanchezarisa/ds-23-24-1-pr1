@@ -3,7 +3,8 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.adt.sequential.LinkedList;
-import edu.uoc.ds.adt.sequential.List;
+
+import java.util.Optional;
 
 public class FiniteLinkedList<E> extends LinkedList<E> implements FiniteContainer<E> {
     public static final int DEFAULT_CAPACITY = 20;
@@ -58,13 +59,13 @@ public class FiniteLinkedList<E> extends LinkedList<E> implements FiniteContaine
         return max;
     }
 
-    public Position<E> find(E elem) {
+    public Optional<Position<E>> find(E elem) {
         var elems = positions();
         while (elems.hasNext()) {
             var e = elems.next();
             if (e.getElem().equals(elem))
-                return e;
+                return Optional.of(e);
         }
-        return null;
+        return Optional.empty();
     }
 }
