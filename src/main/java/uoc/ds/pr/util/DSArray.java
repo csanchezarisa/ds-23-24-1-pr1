@@ -3,11 +3,15 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class DSArray<E> implements FiniteContainer<E> {
     public static final int DEFAULT_CAPACITY = 20;
 
-    private final E[] elems;
+    private final transient E[] elems;
     private int n;
 
     public DSArray() {
@@ -42,6 +46,10 @@ public class DSArray<E> implements FiniteContainer<E> {
 
     public E get(int i) {
         return elems[i];
+    }
+
+    public int indexOf(E e) {
+        return Utils.findIndex(values(), e);
     }
 
     @Override

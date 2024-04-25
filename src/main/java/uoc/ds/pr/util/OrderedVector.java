@@ -1,12 +1,16 @@
 package uoc.ds.pr.util;
 
 import edu.uoc.ds.adt.helpers.Position;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Comparator;
 
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class OrderedVector<E> extends FiniteLinkedList<E> {
 
-    private final Comparator<E> cmp;
+    private final transient Comparator<E> cmp;
 
     public OrderedVector(Comparator<E> cmp) {
         this.cmp = cmp;

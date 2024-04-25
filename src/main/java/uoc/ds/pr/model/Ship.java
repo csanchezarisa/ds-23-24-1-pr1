@@ -3,11 +3,10 @@ package uoc.ds.pr.model;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import lombok.*;
 import uoc.ds.pr.model.interfaces.HasId;
+import uoc.ds.pr.util.Utils;
 
 @Data
 @RequiredArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class Ship implements HasId {
 
     @NonNull
@@ -21,13 +20,35 @@ public class Ship implements HasId {
     @NonNull
     private int nCabins4;
     @NonNull
-    private int  nParkingLots;
+    private int nParkingSlots;
     @NonNull
-    private int unloadTime;
+    private int unLoadTimeInMinutes;
     @Setter(AccessLevel.NONE)
-    private LinkedList<String> voyages = new LinkedList<>();
+    private LinkedList<Voyage> voyages = new LinkedList<>();
 
-    public void addVoyage(String voyageId) {
-        voyages.insertEnd(voyageId);
+    public void addVoyage(Voyage voyage) {
+
+        var position = Utils.findPosition(voyages.positions(), voyage);
+        if (position.isEmpty()) {
+            voyages.insertEnd(voyage);
+        } else {
+            voyages.update(position.get(), voyage);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Ship s)) return false;
+        return id.equals(s.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

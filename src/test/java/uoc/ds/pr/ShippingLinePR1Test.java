@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import uoc.ds.pr.exceptions.*;
 import uoc.ds.pr.model.*;
 import uoc.ds.pr.util.DateUtils;
@@ -34,19 +33,19 @@ public class ShippingLinePR1Test {
         this.theShippingLine.addShip("shipId1000", "XXXXX", 999, 888, 777, 666, 99);
         Ship ship1000 = this.theShippingLine.getShip("shipId1000");
         Assert.assertEquals("XXXXX", ship1000.getName());
-        Assert.assertEquals(999, ship1000.getnArmChairs());
-        Assert.assertEquals(888, ship1000.getnCabins2());
-        Assert.assertEquals(777, ship1000.getnCabins4());
-        Assert.assertEquals(666, ship1000.getnParkingSlots());
+        Assert.assertEquals(999, ship1000.getNArmChairs());
+        Assert.assertEquals(888, ship1000.getNCabins2());
+        Assert.assertEquals(777, ship1000.getNCabins4());
+        Assert.assertEquals(666, ship1000.getNParkingSlots());
         Assert.assertEquals(99, ship1000.getUnLoadTimeInMinutes());
         Assert.assertEquals(8, this.theShippingLine.numShips());
 
         this.theShippingLine.addShip("shipId1000", "Roma", 300, 150, 170, 300, 30);
         ship1000 = this.theShippingLine.getShip("shipId1000");
-        Assert.assertEquals(300, ship1000.getnArmChairs());
-        Assert.assertEquals(150, ship1000.getnCabins2());
-        Assert.assertEquals(170, ship1000.getnCabins4());
-        Assert.assertEquals(300, ship1000.getnParkingSlots());
+        Assert.assertEquals(300, ship1000.getNArmChairs());
+        Assert.assertEquals(150, ship1000.getNCabins2());
+        Assert.assertEquals(170, ship1000.getNCabins4());
+        Assert.assertEquals(300, ship1000.getNParkingSlots());
         Assert.assertEquals(30, ship1000.getUnLoadTimeInMinutes());
 
         Assert.assertEquals(8, this.theShippingLine.numShips());
@@ -149,10 +148,10 @@ public class ShippingLinePR1Test {
 
 
         Ship ship4 = this.theShippingLine.getShip("shipId4");
-        Assert.assertEquals(10, ship4.getnArmChairs());
-        Assert.assertEquals(2, ship4.getnCabins2());
-        Assert.assertEquals(12, ship4.getnCabins4());
-        Assert.assertEquals(12, ship4.getnParkingSlots());
+        Assert.assertEquals(10, ship4.getNArmChairs());
+        Assert.assertEquals(2, ship4.getNCabins2());
+        Assert.assertEquals(12, ship4.getNCabins4());
+        Assert.assertEquals(12, ship4.getNParkingSlots());
 
 
         Voyage voyage1 = theShippingLine.getVoyage("voyageId1");
@@ -181,7 +180,7 @@ public class ShippingLinePR1Test {
         Assert.assertEquals(10, voyage1.getAvailableParkingSlots());
 
         String[] clientsC = {"clientId9" ,"clientId10", "clientId11", "clientId12", "clientId13"};
-        Assert.assertThrows(NoAcommodationAvailableException.class, () ->
+        Assert.assertThrows(NoAccommodationAvailableException.class, () ->
                 theShippingLine.reserve(clientsC, "voyageId1", ShippingLine.AccommodationType.ARMCHAIR,null,200 ));
 
         Assert.assertEquals(4, voyage1.getAvailableArmChairs());
@@ -204,7 +203,7 @@ public class ShippingLinePR1Test {
         Assert.assertEquals(10, voyage1.getAvailableParkingSlots());
 
         String[] clientsF = {"clientId15", "clientId16"};
-        Assert.assertThrows(NoAcommodationAvailableException.class, () ->
+        Assert.assertThrows(NoAccommodationAvailableException.class, () ->
             theShippingLine.reserve(clientsF, "voyageId1", ShippingLine.AccommodationType.CABIN2,null,200 ));
 
         String[] clientsG = {"clientId15", "clientId16", "clientId17"};

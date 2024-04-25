@@ -15,8 +15,8 @@ public final class Utils {
         return findIndex(id, elements) != -1;
     }
 
-    public static boolean exists(Iterator<String> elements, String id) {
-        return findIndex(elements, id) != -1;
+    public static <T> boolean exists(Iterator<T> elements, T elem) {
+        return findIndex(elements, elem) != -1;
     }
 
     public static <T extends HasId> T find(String id, Iterator<T> elements) {
@@ -38,10 +38,10 @@ public final class Utils {
         return -1;
     }
 
-    public static int findIndex(Iterator<String> elements, String id) {
+    public static <T> int findIndex(Iterator<T> elements, T elem) {
         int index = 0;
         while (elements.hasNext()) {
-            if (elements.next().equals(id))
+            if (elements.next().equals(elem))
                 return index;
             index++;
         }
@@ -52,6 +52,15 @@ public final class Utils {
         while (positions.hasNext()) {
             var position = positions.next();
             if (position.getElem().getId().equals(id))
+                return Optional.of(position);
+        }
+        return Optional.empty();
+    }
+
+    public static <T> Optional<Position<T>> findPosition(Traversal<T> positions, T elem) {
+        while (positions.hasNext()) {
+            var position = positions.next();
+            if (position.getElem().equals(elem))
                 return Optional.of(position);
         }
         return Optional.empty();
