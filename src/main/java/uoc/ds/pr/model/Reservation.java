@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uoc.ds.pr.ShippingLine;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -19,6 +20,7 @@ public class Reservation {
     private String idVehicle;
     private double price;
     private boolean loaded = false;
+    private Date loadedDate = null;
 
     public Reservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, String idVehicle, double price) {
         this.clients = clients;

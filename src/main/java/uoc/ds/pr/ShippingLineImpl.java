@@ -134,7 +134,21 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public void load(String idClient, String idVoyage, Date dt) throws LoadingAlreadyException, ClientNotFoundException, VoyageNotFoundException, ReservationNotFoundException {
+        // 1. Validate client exists
+        Position<Client> clientPos = Utils.findPosition(idClient, clients.positions())
+                .orElseThrow(() -> new ClientNotFoundException(idClient));
+        Client client = clientPos.getElem();
 
+        // 2. Validate voyage exists
+        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+                .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
+        Voyage voyage = voyagePos.getElem();
+
+        // 3. Reservation exists
+        if (!client.containsReservation(voyage)) throw new ReservationNotFoundException(idClient, idVoyage);
+
+        client.loadReservation(voyage);
+        voyage.loadReservation(client, dt);
     }
 
     @Override
