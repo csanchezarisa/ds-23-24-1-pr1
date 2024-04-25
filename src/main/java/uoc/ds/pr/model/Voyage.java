@@ -3,7 +3,6 @@ package uoc.ds.pr.model;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.adt.sequential.StackArrayImpl;
-import lombok.Data;
 import uoc.ds.pr.exceptions.NoAccommodationAvailableException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
@@ -14,7 +13,6 @@ import uoc.ds.pr.util.Utils;
 import java.util.Date;
 import java.util.Optional;
 
-@Data
 public class Voyage implements HasId {
 
     private final LinkedList<Reservation> reservations = new LinkedList<>();
@@ -37,11 +35,32 @@ public class Voyage implements HasId {
         this.route = route;
         this.ship = ship;
 
-        armChairReservations = new FiniteLinkedList<>(ship.getNArmChairs());
-        cabin2Reservations = new FiniteLinkedList<>(ship.getNCabins2());
-        cabin4Reservations = new FiniteLinkedList<>(ship.getNCabins4());
-        maxParkingReservations = ship.getNParkingSlots();
-        loadedParkingReservations = new StackArrayImpl<>(ship.getNParkingSlots());
+        armChairReservations = new FiniteLinkedList<>(ship.getnArmChairs());
+        cabin2Reservations = new FiniteLinkedList<>(ship.getnCabins2());
+        cabin4Reservations = new FiniteLinkedList<>(ship.getnCabins4());
+        maxParkingReservations = ship.getnParkingSlots();
+        loadedParkingReservations = new StackArrayImpl<>(ship.getnParkingSlots());
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public Ship getShip() {
+        return ship;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public Date getArrivalDt() {
+        return arrivalDt;
+    }
+
+    public Date getDepartureDt() {
+        return departureDt;
     }
 
     public void addReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException {

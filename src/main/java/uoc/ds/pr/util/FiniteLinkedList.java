@@ -3,13 +3,9 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.adt.sequential.LinkedList;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.util.Optional;
 
-@EqualsAndHashCode(callSuper = true)
-@ToString
 public class FiniteLinkedList<E> extends LinkedList<E> implements FiniteContainer<E> {
     public static final int DEFAULT_CAPACITY = 20;
     private final int max;

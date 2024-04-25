@@ -1,30 +1,58 @@
 package uoc.ds.pr.model;
 
 import edu.uoc.ds.adt.sequential.LinkedList;
-import lombok.*;
 import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.Utils;
 
-@Data
-@RequiredArgsConstructor
 public class Ship implements HasId {
 
-    @NonNull
     private String id;
-    @NonNull
     private String name;
-    @NonNull
     private int nArmChairs;
-    @NonNull
     private int nCabins2;
-    @NonNull
     private int nCabins4;
-    @NonNull
     private int nParkingSlots;
-    @NonNull
     private int unLoadTimeInMinutes;
-    @Setter(AccessLevel.NONE)
     private LinkedList<Voyage> voyages = new LinkedList<>();
+
+    public Ship(String id, String name, int nArmChairs, int nCabins2, int nCabins4, int nParkingSlots, int unLoadTimeInMinutes) {
+        this.id = id;
+        this.name = name;
+        this.nArmChairs = nArmChairs;
+        this.nCabins2 = nCabins2;
+        this.nCabins4 = nCabins4;
+        this.nParkingSlots = nParkingSlots;
+        this.unLoadTimeInMinutes = unLoadTimeInMinutes;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getnArmChairs() {
+        return nArmChairs;
+    }
+
+    public int getnCabins2() {
+        return nCabins2;
+    }
+
+    public int getnCabins4() {
+        return nCabins4;
+    }
+
+    public int getnParkingSlots() {
+        return nParkingSlots;
+    }
+
+    public int getUnLoadTimeInMinutes() {
+        return unLoadTimeInMinutes;
+    }
 
     public void addVoyage(Voyage voyage) {
 

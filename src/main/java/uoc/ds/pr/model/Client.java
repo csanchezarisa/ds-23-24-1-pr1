@@ -3,27 +3,38 @@ package uoc.ds.pr.model;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
-import lombok.*;
 import uoc.ds.pr.exceptions.LoadingAlreadyException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
 import uoc.ds.pr.model.interfaces.HasId;
 
 import java.util.Optional;
 
-@Data
-@RequiredArgsConstructor
 public class Client implements HasId {
 
-    @NonNull
     private String id;
-    @NonNull
     private String name;
-    @NonNull
     private String surname;
-    @Setter(AccessLevel.NONE)
     private LinkedList<String> voyages = new LinkedList<>();
-    @Setter(AccessLevel.NONE)
     private LinkedList<Reservation> reservations = new LinkedList<>();
+
+    public Client(String id, String name, String surname) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
 
     public void addVoyage(String voyageId) {
         voyages.insertEnd(voyageId);

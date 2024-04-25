@@ -3,11 +3,7 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-@EqualsAndHashCode
-@ToString
 public class DSArray<E> implements FiniteContainer<E> {
     public static final int DEFAULT_CAPACITY = 20;
 

@@ -3,12 +3,10 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.Traversal;
-import lombok.experimental.UtilityClass;
 import uoc.ds.pr.model.interfaces.HasId;
 
 import java.util.Optional;
 
-@UtilityClass
 public final class Utils {
 
     public static <T extends HasId> boolean exists(String id, Iterator<T> elements) {
@@ -64,5 +62,9 @@ public final class Utils {
                 return Optional.of(position);
         }
         return Optional.empty();
+    }
+
+    private Utils() {
+        throw new UnsupportedOperationException("This is a utility class and should not be initialized");
     }
 }

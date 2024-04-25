@@ -2,22 +2,34 @@ package uoc.ds.pr.model;
 
 
 import edu.uoc.ds.adt.sequential.LinkedList;
-import lombok.*;
 import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.Utils;
 
-@Data
-@RequiredArgsConstructor
 public class Route implements HasId {
 
-    @NonNull
     private String id;
-    @NonNull
     private String beginningPort;
-    @NonNull
     private String arrivalPort;
-    @Setter(AccessLevel.NONE)
     private LinkedList<Voyage> voyages = new LinkedList<>();
+
+    public Route(String id, String beginningPort, String arrivalPort) {
+        this.id = id;
+        this.beginningPort = beginningPort;
+        this.arrivalPort = arrivalPort;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public String getBeginningPort() {
+        return beginningPort;
+    }
+
+    public String getArrivalPort() {
+        return arrivalPort;
+    }
 
     public void addVoyage(Voyage voyage) {
         var position = Utils.findPosition(voyages.positions(), voyage);
