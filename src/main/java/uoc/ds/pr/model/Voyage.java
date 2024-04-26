@@ -101,7 +101,6 @@ public class Voyage implements HasId {
     private void insertArmChairReservation(Reservation reservation) {
         var clients = reservation.clients();
         while (clients.hasNext()) {
-            armChairReservations.insertEnd(reservation);
 
             Client client = clients.next();
             Reservation newReservation = reservation.clone();
@@ -110,6 +109,7 @@ public class Voyage implements HasId {
             reservationClient.insertEnd(client);
 
             newReservation.setClients(reservationClient);
+            armChairReservations.insertEnd(newReservation);
             reservations.insertEnd(newReservation);
         }
     }

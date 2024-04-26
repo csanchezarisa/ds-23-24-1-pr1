@@ -72,7 +72,6 @@ public class Client implements HasId {
         if (reservation.isLoaded()) throw new LoadingAlreadyException(id, voyage.getId());
 
         reservation.setLoaded(true);
-        reservations.update(reservationPos, reservation);
     }
 
     private Optional<Position<Reservation>> findReservation(Voyage voyage) {

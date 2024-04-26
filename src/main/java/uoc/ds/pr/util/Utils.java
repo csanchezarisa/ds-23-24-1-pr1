@@ -26,6 +26,15 @@ public final class Utils {
         return Optional.empty();
     }
 
+    public static <T> Optional<T> find(Iterator<T> elements, T elem) {
+        while (elements.hasNext()) {
+            var element = elements.next();
+            if (element.equals(elem))
+                return Optional.of(element);
+        }
+        return Optional.empty();
+    }
+
     public static <T extends HasId> int findIndex(String id, Iterator<T> elements) {
         int index = 0;
         while (elements.hasNext()) {

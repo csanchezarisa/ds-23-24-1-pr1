@@ -123,13 +123,11 @@ public class ShippingLineImpl implements ShippingLine {
         }
 
         voyage.addReservation(reservation);
-        voyages.update(voyagePos, voyage);
 
         for (var clientPos : clientPositions) {
             Client client = clientPos.getElem();
             client.addReservation(reservation);
             client.addVoyage(voyage);
-            this.clients.update(clientPos, client);
         }
     }
 
