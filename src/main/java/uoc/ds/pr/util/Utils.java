@@ -17,13 +17,13 @@ public final class Utils {
         return findIndex(elements, elem) != -1;
     }
 
-    public static <T extends HasId> T find(String id, Iterator<T> elements) {
+    public static <T extends HasId> Optional<T> find(String id, Iterator<T> elements) {
         while (elements.hasNext()) {
             var element = elements.next();
             if (element.getId().equals(id))
-                return element;
+                return Optional.of(element);
         }
-        return null;
+        return Optional.empty();
     }
 
     public static <T extends HasId> int findIndex(String id, Iterator<T> elements) {

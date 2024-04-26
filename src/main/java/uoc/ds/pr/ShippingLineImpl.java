@@ -19,7 +19,9 @@ public class ShippingLineImpl implements ShippingLine {
     private final DSArray<Route> routes = new DSArray<>();
     private final LinkedList<Client> clients = new LinkedList<>();
     private final LinkedList<Voyage> voyages = new LinkedList<>();
-    private final OrderedVector<Client> mostTraveledClient = new OrderedVector<>(Comparator.comparingInt(Client::countLoadedReservations));
+    private final OrderedVector<Client> mostTraveledClients = new OrderedVector<>(Comparator.comparingInt(Client::countLoadedReservations));
+    private final OrderedVector<Route> mostTraveledRoutes = new OrderedVector<>(Comparator.comparingInt(Route::numVoyages)
+            .thenComparing(Route::getId));
 
     @Override
     public void addShip(String id, String name, int nArmChairs, int nCabins2, int nCabins4, int nParkingLots, int unLoadTimeinMinutes) {
@@ -49,12 +51,10 @@ public class ShippingLineImpl implements ShippingLine {
     public void addClient(String id, String name, String surname) {
         Client client = new Client(id, name, surname);
 
-        var position = Utils.findPosition(clients.positions(), client);
-        if (position.isEmpty()) {
-            clients.insertEnd(client);
-        } else {
-            clients.update(position.get(), client);
-        }
+        Utils.findPosition(clients.positions(), client)
+                .ifPresentOrElse(
+                        p -> clients.update(p, client),
+                        () -> clients.insertEnd(client));
     }
 
     @Override
@@ -76,18 +76,14 @@ public class ShippingLineImpl implements ShippingLine {
 
         Voyage voyage = new Voyage(id, departureDt, arrivalDt, ship, route);
 
-        var position = Utils.findPosition(voyages.positions(), voyage);
-        if (position.isEmpty()) {
-            voyages.insertEnd(voyage);
-        } else {
-            voyages.update(position.get(), voyage);
-        }
+        Utils.findPosition(voyages.positions(), voyage)
+                .ifPresentOrElse(
+                        p -> voyages.update(p, voyage),
+                        () -> voyages.insertEnd(voyage));
 
         ship.addVoyage(voyage);
-        ships.modify(shipIdx, ship);
-
         route.addVoyage(voyage);
-        routes.modify(routeIdx, route);
+        mostTraveledRoutes.update(route);
     }
 
     @Override
@@ -132,7 +128,7 @@ public class ShippingLineImpl implements ShippingLine {
         for (var clientPos : clientPositions) {
             Client client = clientPos.getElem();
             client.addReservation(reservation);
-            client.addVoyage(voyage.getId());
+            client.addVoyage(voyage);
             this.clients.update(clientPos, client);
         }
     }
@@ -154,7 +150,7 @@ public class ShippingLineImpl implements ShippingLine {
 
         client.loadReservation(voyage);
         voyage.loadReservation(client, dt);
-        mostTraveledClient.update(client);
+        mostTraveledClients.update(client);
     }
 
     @Override
@@ -210,13 +206,14 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Client getMostTravelerClient() throws NoClientException {
-        if (mostTraveledClient.isEmpty()) throw new NoClientException();
-        return mostTraveledClient.values().next();
+        if (mostTraveledClients.isEmpty()) throw new NoClientException();
+        return mostTraveledClients.values().next();
     }
 
     @Override
     public Route getMostTraveledRoute() throws NoRouteException {
-        return null;
+        if (mostTraveledRoutes.isEmpty()) throw new NoRouteException();
+        return mostTraveledRoutes.values().next();
     }
 
     /***********************************************************************************/
@@ -225,22 +222,22 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Ship getShip(String id) {
-        return Utils.find(id, ships.values());
+        return Utils.find(id, ships.values()).orElse(null);
     }
 
     @Override
     public Route getRoute(String idRoute) {
-        return Utils.find(idRoute, routes.values());
+        return Utils.find(idRoute, routes.values()).orElse(null);
     }
 
     @Override
     public Client getClient(String id) {
-        return Utils.find(id, clients.values());
+        return Utils.find(id, clients.values()).orElse(null);
     }
 
     @Override
     public Voyage getVoyage(String id) {
-        return Utils.find(id, voyages.values());
+        return Utils.find(id, voyages.values()).orElse(null);
     }
 
     @Override

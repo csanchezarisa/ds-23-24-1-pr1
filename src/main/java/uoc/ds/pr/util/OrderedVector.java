@@ -25,7 +25,7 @@ public class OrderedVector<E> extends FiniteLinkedList<E> {
             delete(last);
         }
 
-        if (last == null || cmp.compare(elem, last.getElem()) <= 0) {
+        if (last == null || !last.getElem().equals(elem) && cmp.compare(elem, last.getElem()) <= 0) {
             return super.insertEnd(elem).getElem();
         }
 

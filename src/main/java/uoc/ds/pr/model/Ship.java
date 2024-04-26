@@ -56,12 +56,10 @@ public class Ship implements HasId {
 
     public void addVoyage(Voyage voyage) {
 
-        var position = Utils.findPosition(voyages.positions(), voyage);
-        if (position.isEmpty()) {
-            voyages.insertEnd(voyage);
-        } else {
-            voyages.update(position.get(), voyage);
-        }
+        Utils.findPosition(voyages.positions(), voyage)
+                .ifPresentOrElse(
+                        p -> voyages.update(p, voyage),
+                        () -> voyages.insertEnd(voyage));
     }
 
     @Override

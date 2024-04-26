@@ -14,7 +14,7 @@ public class Client implements HasId {
     private String id;
     private String name;
     private String surname;
-    private LinkedList<String> voyages = new LinkedList<>();
+    private LinkedList<Voyage> voyages = new LinkedList<>();
     private LinkedList<Reservation> reservations = new LinkedList<>();
 
     public Client(String id, String name, String surname) {
@@ -36,8 +36,8 @@ public class Client implements HasId {
         return surname;
     }
 
-    public void addVoyage(String voyageId) {
-        voyages.insertEnd(voyageId);
+    public void addVoyage(Voyage voyage) {
+        voyages.insertEnd(voyage);
     }
 
     public void addReservation(Reservation reservation) {

@@ -156,8 +156,7 @@ public class Voyage implements HasId {
             while (reservationIt.hasNext()) {
 
                 Reservation oldReservation = reservationIt.next();
-                if (oldReservation.getVoyage().getId().equals(reservation.getVoyage().getId())
-                        && Utils.exists(client.getId(), oldReservation.getClients().values())) {
+                if (Utils.exists(client.getId(), oldReservation.getClients().values())) {
 
                     return true;
                 }
