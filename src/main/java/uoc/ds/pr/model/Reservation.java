@@ -5,26 +5,24 @@ import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
 import uoc.ds.pr.model.interfaces.HasId;
 
-import java.util.Date;
 import java.util.UUID;
 
-public class Reservation implements HasId {
+public abstract class Reservation implements HasId, Cloneable {
 
     private final String id = UUID.randomUUID().toString();
     private LinkedList<Client> clients;
     private Voyage voyage;
     private ShippingLine.AccommodationType accommodationType;
-    private String idVehicle;
     private double price;
+    private String idVehicle;
     private boolean loaded = false;
-    private Date loadedDate = null;
 
-    public Reservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, String idVehicle, double price) {
+    protected Reservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
         this.clients = clients;
         this.voyage = voyage;
         this.accommodationType = accommodationType;
-        this.idVehicle = idVehicle;
         this.price = price;
+        this.idVehicle = idVehicle;
     }
 
     @Override
@@ -52,26 +50,6 @@ public class Reservation implements HasId {
         return accommodationType;
     }
 
-    public void setAccommodationType(ShippingLine.AccommodationType accommodationType) {
-        this.accommodationType = accommodationType;
-    }
-
-    public String getIdVehicle() {
-        return idVehicle;
-    }
-
-    public void setIdVehicle(String idVehicle) {
-        this.idVehicle = idVehicle;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public boolean isLoaded() {
         return loaded;
     }
@@ -80,12 +58,8 @@ public class Reservation implements HasId {
         this.loaded = loaded;
     }
 
-    public Date getLoadedDate() {
-        return loadedDate;
-    }
-
-    public void setLoadedDate(Date loadedDate) {
-        this.loadedDate = loadedDate;
+    public String getIdVehicle() {
+        return idVehicle;
     }
 
     public Iterator<Client> clients() {
@@ -96,12 +70,23 @@ public class Reservation implements HasId {
         return clients.size();
     }
 
-    public boolean hasParkingLot() {
-        return idVehicle != null && !idVehicle.isEmpty();
+    public double getPrice() {
+        return price;
     }
+
+    public abstract boolean hasParkingLot();
 
     @Override
     public String toString() {
         return id;
+    }
+
+    @Override
+    public Reservation clone() {
+        try {
+            return (Reservation) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

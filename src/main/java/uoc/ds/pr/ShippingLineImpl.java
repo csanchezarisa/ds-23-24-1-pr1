@@ -119,7 +119,12 @@ public class ShippingLineImpl implements ShippingLine {
         };
         if (clients.length > maxClients) throw new MaxExceededException();
 
-        Reservation reservation = new Reservation(reservationClients, voyage, accommodationType, idVehicle, price);
+        Reservation reservation;
+        if (idVehicle != null && !idVehicle.isBlank()) {
+            reservation = new ParkingReservation(reservationClients, voyage, accommodationType, price, idVehicle);
+        } else {
+            reservation = new NormalReservation(reservationClients, voyage, accommodationType, price, idVehicle);
+        }
 
         voyage.addReservation(reservation);
         voyages.update(voyagePos, voyage);
@@ -149,11 +154,17 @@ public class ShippingLineImpl implements ShippingLine {
 
         client.loadReservation(voyage);
         voyage.loadReservation(client, dt);
+        mostTraveledClient.update(client);
     }
 
     @Override
     public Iterator<Reservation> unload(String idVoyage) throws VoyageNotFoundException {
-        return null;
+        // 1. Validate voyage exists
+        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+                .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
+        Voyage voyage = voyagePos.getElem();
+
+        return voyage.unload();
     }
 
     @Override
@@ -163,23 +174,44 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getClientReservations(String idClient) throws NoReservationException {
-        return null;
+        // 1. Validate client exists
+        Position<Client> clientPos = Utils.findPosition(idClient, clients.positions())
+                .orElseThrow(NoReservationException::new);
+        var reservations = clientPos.getElem().reservations();
+
+        if (!reservations.hasNext()) throw new NoReservationException();
+
+        return reservations;
     }
 
     @Override
     public Iterator<Reservation> getVoyageReservations(String idVoyage) throws NoReservationException {
-        return null;
+        // 1. Validate voyage exists
+        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+                .orElseThrow(NoReservationException::new);
+        var reservations = voyagePos.getElem().reservations();
+
+        if (!reservations.hasNext()) throw new NoReservationException();
+
+        return reservations;
     }
 
     @Override
     public Iterator<Reservation> getAccommodationReservations(String idVoyage, AccommodationType accommodationType) throws NoReservationException {
-        return null;
+        // 1. Validate voyage exists
+        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+                .orElseThrow(NoReservationException::new);
+        var reservations = voyagePos.getElem().reservations(accommodationType);
+
+        if (!reservations.hasNext()) throw new NoReservationException();
+
+        return reservations;
     }
 
     @Override
     public Client getMostTravelerClient() throws NoClientException {
-        if (clients.isEmpty()) throw new NoClientException();
-        return clients.values().next();
+        if (mostTraveledClient.isEmpty()) throw new NoClientException();
+        return mostTraveledClient.values().next();
     }
 
     @Override

@@ -3,6 +3,8 @@ package uoc.ds.pr.model;
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.adt.sequential.StackArrayImpl;
+import edu.uoc.ds.traversal.Iterator;
+import uoc.ds.pr.ShippingLine;
 import uoc.ds.pr.exceptions.NoAccommodationAvailableException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
@@ -16,11 +18,11 @@ import java.util.Optional;
 public class Voyage implements HasId {
 
     private final LinkedList<Reservation> reservations = new LinkedList<>();
-    private final FiniteLinkedList<String> armChairReservations;
-    private final FiniteLinkedList<String> cabin2Reservations;
-    private final FiniteLinkedList<String> cabin4Reservations;
+    private final FiniteLinkedList<Reservation> armChairReservations;
+    private final FiniteLinkedList<Reservation> cabin2Reservations;
+    private final FiniteLinkedList<Reservation> cabin4Reservations;
     private final int maxParkingReservations;
-    private final StackArrayImpl<Reservation> loadedParkingReservations;
+    private final StackArrayImpl<ParkingReservation> loadedParkingReservations;
     private int parkingReservations = 0;
     private String id;
     private Date departureDt;
@@ -69,15 +71,19 @@ public class Voyage implements HasId {
 
         switch (reservation.getAccommodationType()) {
             case ARMCHAIR -> insertArmChairReservation(reservation);
-            case CABIN2 -> cabin2Reservations.insertEnd(reservation.getId());
-            case CABIN4 -> cabin4Reservations.insertEnd(reservation.getId());
+            case CABIN2 -> {
+                cabin2Reservations.insertEnd(reservation);
+                reservations.insertEnd(reservation);
+            }
+            case CABIN4 -> {
+                cabin4Reservations.insertEnd(reservation);
+                reservations.insertEnd(reservation);
+            }
         }
 
-        if (reservation.getIdVehicle() != null && !reservation.getIdVehicle().isEmpty()) {
+        if (reservation instanceof ParkingReservation) {
             reservations.insertEnd(reservation);
             parkingReservations++;
-        } else {
-            reservations.insertEnd(reservation);
         }
     }
 
@@ -93,8 +99,18 @@ public class Voyage implements HasId {
     }
 
     private void insertArmChairReservation(Reservation reservation) {
-        for (int i = 0; i < reservation.getClients().size(); i++) {
-            armChairReservations.insertEnd(reservation.getId());
+        var clients = reservation.clients();
+        while (clients.hasNext()) {
+            armChairReservations.insertEnd(reservation);
+
+            Client client = clients.next();
+            Reservation newReservation = reservation.clone();
+
+            LinkedList<Client> reservationClient = new LinkedList<>();
+            reservationClient.insertEnd(client);
+
+            newReservation.setClients(reservationClient);
+            reservations.insertEnd(newReservation);
         }
     }
 
@@ -116,6 +132,18 @@ public class Voyage implements HasId {
 
     public int numParkingLots() {
         return loadedParkingReservations.size();
+    }
+
+    public Iterator<Reservation> reservations() {
+        return reservations.values();
+    }
+
+    public Iterator<Reservation> reservations(ShippingLine.AccommodationType accommodationType) {
+        return switch (accommodationType) {
+            case ARMCHAIR -> armChairReservations.values();
+            case CABIN2 -> cabin2Reservations.values();
+            case CABIN4 -> cabin4Reservations.values();
+        };
     }
 
     public boolean existsReservation(Reservation reservation) {
@@ -144,10 +172,25 @@ public class Voyage implements HasId {
                 .orElseThrow(() -> new ReservationNotFoundException(client.getId(), id));
         Reservation reservation = reservationPos.getElem();
 
-        if (reservation.getIdVehicle() != null && !reservation.getIdVehicle().isEmpty()) {
-            reservation.setLoadedDate(loadDate);
-            loadedParkingReservations.push(reservation);
+        if (reservation instanceof ParkingReservation parkingReservation) {
+            parkingReservation.setLoadedDate(loadDate);
+            loadedParkingReservations.push(parkingReservation);
         }
+    }
+
+    public Iterator<Reservation> unload() {
+        LinkedList<Reservation> unLoadReservations = new LinkedList<>();
+        final int shipUnloadTime = ship.getUnLoadTimeInMinutes();
+
+        int count = 1;
+        while (!loadedParkingReservations.isEmpty()) {
+            ParkingReservation reservation = loadedParkingReservations.pop();
+            reservation.setUnLoadTimeInMinutes(count * shipUnloadTime);
+            unLoadReservations.insertEnd(reservation);
+            count++;
+        }
+
+        return unLoadReservations.values();
     }
 
     private Optional<Position<Reservation>> findReservation(Client client) {
