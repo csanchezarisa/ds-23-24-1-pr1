@@ -1,9 +1,9 @@
 package uoc.ds.pr.model;
 
-import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
 import uoc.ds.pr.model.interfaces.HasId;
+import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -11,14 +11,14 @@ import java.util.UUID;
 public abstract class Reservation implements HasId, Cloneable {
 
     private final String id = UUID.randomUUID().toString();
-    private LinkedList<Client> clients;
+    private DSLinkedList<Client> clients;
     private Voyage voyage;
     private final ShippingLine.AccommodationType accommodationType;
     private final double price;
     private final String idVehicle;
     private boolean loaded = false;
 
-    protected Reservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
+    protected Reservation(DSLinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
         this.clients = clients;
         this.voyage = voyage;
         this.accommodationType = accommodationType;
@@ -31,11 +31,7 @@ public abstract class Reservation implements HasId, Cloneable {
         return id;
     }
 
-    public LinkedList<Client> getClients() {
-        return clients;
-    }
-
-    public void setClients(LinkedList<Client> clients) {
+    public void setClients(DSLinkedList<Client> clients) {
         this.clients = clients;
     }
 
@@ -72,6 +68,10 @@ public abstract class Reservation implements HasId, Cloneable {
     }
 
     public abstract boolean hasParkingLot();
+
+    public boolean containsClient(Client client) {
+        return clients.exists(client);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,8 +1,7 @@
 package uoc.ds.pr.model;
 
-import edu.uoc.ds.adt.sequential.LinkedList;
 import uoc.ds.pr.model.interfaces.HasId;
-import uoc.ds.pr.util.Utils;
+import uoc.ds.pr.util.DSLinkedList;
 
 public class Ship implements HasId {
 
@@ -13,7 +12,7 @@ public class Ship implements HasId {
     private final int nCabins4;
     private final int nParkingSlots;
     private final int unLoadTimeInMinutes;
-    private final LinkedList<Voyage> voyages = new LinkedList<>();
+    private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
 
     public Ship(String id, String name, int nArmChairs, int nCabins2, int nCabins4, int nParkingSlots, int unLoadTimeInMinutes) {
         this.id = id;
@@ -55,8 +54,7 @@ public class Ship implements HasId {
     }
 
     public void addVoyage(Voyage voyage) {
-
-        Utils.findPosition(voyages.positions(), voyage)
+        voyages.findPosition(voyage)
                 .ifPresentOrElse(
                         p -> voyages.update(p, voyage),
                         () -> voyages.insertEnd(voyage));

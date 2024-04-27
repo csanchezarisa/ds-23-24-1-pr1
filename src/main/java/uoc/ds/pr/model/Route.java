@@ -1,16 +1,15 @@
 package uoc.ds.pr.model;
 
 
-import edu.uoc.ds.adt.sequential.LinkedList;
 import uoc.ds.pr.model.interfaces.HasId;
-import uoc.ds.pr.util.Utils;
+import uoc.ds.pr.util.DSLinkedList;
 
 public class Route implements HasId {
 
     private final String id;
     private final String beginningPort;
     private final String arrivalPort;
-    private final LinkedList<Voyage> voyages = new LinkedList<>();
+    private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
 
     public Route(String id, String beginningPort, String arrivalPort) {
         this.id = id;
@@ -32,7 +31,7 @@ public class Route implements HasId {
     }
 
     public void addVoyage(Voyage voyage) {
-        Utils.findPosition(voyages.positions(), voyage)
+        voyages.findPosition(voyage)
                 .ifPresentOrElse(
                         p -> voyages.update(p, voyage),
                         () -> voyages.insertEnd(voyage));

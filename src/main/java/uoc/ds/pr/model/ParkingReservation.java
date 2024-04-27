@@ -1,7 +1,7 @@
 package uoc.ds.pr.model;
 
-import edu.uoc.ds.adt.sequential.LinkedList;
 import uoc.ds.pr.ShippingLine;
+import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Date;
 
@@ -10,12 +10,8 @@ public class ParkingReservation extends Reservation {
     private Date loadedDate = null;
     private Integer unLoadTimeInMinutes = null;
 
-    public ParkingReservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
+    public ParkingReservation(DSLinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
         super(clients, voyage, accommodationType, price, idVehicle);
-    }
-
-    public Date getLoadedDate() {
-        return loadedDate;
     }
 
     public void setLoadedDate(Date loadedDate) {

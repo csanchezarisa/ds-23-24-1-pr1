@@ -4,7 +4,9 @@ import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
 
-public class DSArray<E> implements FiniteContainer<E> {
+import java.util.Optional;
+
+public class DSArray<E> implements FiniteContainer<E>, Findable<E> {
     public static final int DEFAULT_CAPACITY = 20;
 
     private final transient E[] elems;
@@ -44,8 +46,15 @@ public class DSArray<E> implements FiniteContainer<E> {
         return elems[i];
     }
 
-    public int indexOf(E e) {
-        return Utils.findIndex(values(), e);
+    public int indexOf(E elem) {
+        var elements = values();
+        int index = 0;
+        while (elements.hasNext()) {
+            if (elements.next().equals(elem))
+                return index;
+            index++;
+        }
+        return -1;
     }
 
     @Override
@@ -66,5 +75,21 @@ public class DSArray<E> implements FiniteContainer<E> {
     @Override
     public Iterator<E> values() {
         return new IteratorArrayImpl<>(elems, n, 0);
+    }
+
+    @Override
+    public Optional<E> find(E elem) {
+        var elements = values();
+        while (elements.hasNext()) {
+            var element = elements.next();
+            if (element.equals(elem))
+                return Optional.of(element);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean exists(E elem) {
+        return find(elem).isPresent();
     }
 }

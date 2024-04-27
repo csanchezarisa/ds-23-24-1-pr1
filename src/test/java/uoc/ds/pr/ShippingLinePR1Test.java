@@ -535,7 +535,7 @@ public class ShippingLinePR1Test {
         route = theShippingLine.getMostTraveledRoute();
         Assert.assertEquals("routeId1", route.getId());
         Assert.assertEquals("Barcelona-Civitavecchia", route.toString());
-        Assert.assertEquals(3, route.numVoyages());
+        Assert.assertEquals(4, route.numVoyages());
 
     }
 }

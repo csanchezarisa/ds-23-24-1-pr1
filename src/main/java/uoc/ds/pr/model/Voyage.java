@@ -9,6 +9,7 @@ import uoc.ds.pr.exceptions.ParkingFullException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
 import uoc.ds.pr.model.interfaces.HasId;
+import uoc.ds.pr.util.DSLinkedList;
 import uoc.ds.pr.util.FiniteLinkedList;
 import uoc.ds.pr.util.Utils;
 
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 public class Voyage implements HasId {
 
-    private final LinkedList<Reservation> reservations = new LinkedList<>();
+    private final DSLinkedList<Reservation> reservations = new DSLinkedList<>();
     private final FiniteLinkedList<Reservation> armChairReservations;
     private final FiniteLinkedList<Reservation> cabin2Reservations;
     private final FiniteLinkedList<Reservation> cabin4Reservations;
@@ -58,14 +59,6 @@ public class Voyage implements HasId {
         return route;
     }
 
-    public Date getArrivalDt() {
-        return arrivalDt;
-    }
-
-    public Date getDepartureDt() {
-        return departureDt;
-    }
-
     public boolean isLandingDone() {
         return landingDone;
     }
@@ -96,7 +89,7 @@ public class Voyage implements HasId {
         if (existsReservation(reservation)) throw new ReservationAlreadyExistsException();
 
         boolean noAccommodationAvailable = switch (reservation.getAccommodationType()) {
-            case ARMCHAIR -> reservation.getClients().size() > getAvailableArmChairs();
+            case ARMCHAIR -> reservation.numClients() > getAvailableArmChairs();
             case CABIN2 -> getAvailableCabin2() == 0;
             case CABIN4 -> getAvailableCabin4() == 0;
         };
@@ -112,7 +105,7 @@ public class Voyage implements HasId {
             Client client = clients.next();
             Reservation newReservation = reservation.clone();
 
-            LinkedList<Client> reservationClient = new LinkedList<>();
+            DSLinkedList<Client> reservationClient = new DSLinkedList<>();
             reservationClient.insertEnd(client);
 
             newReservation.setClients(reservationClient);
@@ -167,17 +160,15 @@ public class Voyage implements HasId {
     }
 
     public boolean existsReservation(Reservation reservation) {
-        var clients = reservation.getClients().values();
+        var clients = reservation.clients();
         while (clients.hasNext()) {
 
             Client client = clients.next();
             var reservationIt = reservations.values();
 
             while (reservationIt.hasNext()) {
-
                 Reservation oldReservation = reservationIt.next();
-                if (Utils.exists(client.getId(), oldReservation.getClients().values())) {
-
+                if (oldReservation.containsClient(client)) {
                     return true;
                 }
             }
@@ -218,7 +209,7 @@ public class Voyage implements HasId {
         var reservationIt = reservations.values();
         while (reservationIt.hasNext()) {
             var reservation = reservationIt.next();
-            if (Utils.exists(reservation.getClients().values(), client))
+            if (reservation.containsClient(client))
                 return Optional.of(reservation);
         }
         return Optional.empty();

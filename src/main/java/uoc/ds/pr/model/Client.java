@@ -1,11 +1,11 @@
 package uoc.ds.pr.model;
 
 import edu.uoc.ds.adt.helpers.Position;
-import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.exceptions.LoadingAlreadyException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
 import uoc.ds.pr.model.interfaces.HasId;
+import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Optional;
 
@@ -14,8 +14,8 @@ public class Client implements HasId {
     private final String id;
     private final String name;
     private final String surname;
-    private final LinkedList<Voyage> voyages = new LinkedList<>();
-    private final LinkedList<Reservation> reservations = new LinkedList<>();
+    private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
+    private final DSLinkedList<Reservation> reservations = new DSLinkedList<>();
 
     public Client(String id, String name, String surname) {
         this.id = id;

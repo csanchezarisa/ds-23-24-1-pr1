@@ -42,6 +42,6 @@ public class OrderedVector<E> extends FiniteLinkedList<E> {
     }
 
     public E delete(E elem) {
-        return find(elem).map(super::delete).orElse(null);
+        return findPosition(elem).map(super::delete).orElse(null);
     }
 }

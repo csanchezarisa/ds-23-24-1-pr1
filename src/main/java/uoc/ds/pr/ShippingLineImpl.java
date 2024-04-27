@@ -1,10 +1,10 @@
 package uoc.ds.pr;
 
-import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.exceptions.*;
 import uoc.ds.pr.model.*;
 import uoc.ds.pr.util.DSArray;
+import uoc.ds.pr.util.DSLinkedList;
 import uoc.ds.pr.util.OrderedVector;
 import uoc.ds.pr.util.Utils;
 
@@ -16,8 +16,8 @@ public class ShippingLineImpl implements ShippingLine {
 
     private final DSArray<Ship> ships = new DSArray<>();
     private final DSArray<Route> routes = new DSArray<>();
-    private final LinkedList<Client> clients = new LinkedList<>();
-    private final LinkedList<Voyage> voyages = new LinkedList<>();
+    private final DSLinkedList<Client> clients = new DSLinkedList<>();
+    private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
     private final OrderedVector<Client> mostTraveledClients = new OrderedVector<>(Comparator.comparingInt(Client::countLoadedReservations));
     private final OrderedVector<Route> mostTraveledRoutes = new OrderedVector<>(Comparator.comparingInt(Route::numVoyages)
             .thenComparing(Route::getId));
@@ -50,7 +50,7 @@ public class ShippingLineImpl implements ShippingLine {
     public void addClient(String id, String name, String surname) {
         Client client = new Client(id, name, surname);
 
-        Utils.findPosition(clients.positions(), client)
+        clients.findPosition(client)
                 .ifPresentOrElse(
                         p -> clients.update(p, client),
                         () -> clients.insertEnd(client));
@@ -67,7 +67,7 @@ public class ShippingLineImpl implements ShippingLine {
 
         Voyage voyage = new Voyage(id, departureDt, arrivalDt, ship, route);
 
-        Utils.findPosition(voyages.positions(), voyage)
+        voyages.findPosition(voyage)
                 .ifPresentOrElse(
                         p -> voyages.update(p, voyage),
                         () -> voyages.insertEnd(voyage));
@@ -85,7 +85,7 @@ public class ShippingLineImpl implements ShippingLine {
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
 
         // 2. Validate Voyage and Clients exist
-        LinkedList<Client> reservationClients = new LinkedList<>();
+        DSLinkedList<Client> reservationClients = new DSLinkedList<>();
 
         for (String clientId : clients) {
             Utils.find(clientId, this.clients.values())
@@ -117,7 +117,7 @@ public class ShippingLineImpl implements ShippingLine {
             client.addVoyage(voyage);
 
             Reservation newReservation = reservation.clone();
-            LinkedList<Client> newReservationClient = new LinkedList<>();
+            DSLinkedList<Client> newReservationClient = new DSLinkedList<>();
             newReservationClient.insertEnd(client);
             client.addReservation(newReservation);
         }
