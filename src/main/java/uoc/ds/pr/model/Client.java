@@ -11,11 +11,11 @@ import java.util.Optional;
 
 public class Client implements HasId {
 
-    private String id;
-    private String name;
-    private String surname;
-    private LinkedList<Voyage> voyages = new LinkedList<>();
-    private LinkedList<Reservation> reservations = new LinkedList<>();
+    private final String id;
+    private final String name;
+    private final String surname;
+    private final LinkedList<Voyage> voyages = new LinkedList<>();
+    private final LinkedList<Reservation> reservations = new LinkedList<>();
 
     public Client(String id, String name, String surname) {
         this.id = id;

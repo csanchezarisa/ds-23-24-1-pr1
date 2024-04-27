@@ -11,7 +11,7 @@ import uoc.ds.pr.util.DateUtils;
 
 public class ShippingLinePR1Test {
 
-    private ShippingLine theShippingLine;
+    protected ShippingLine theShippingLine;
 
     @Before
     public void setUp() throws Exception {

@@ -26,15 +26,6 @@ public final class Utils {
         return Optional.empty();
     }
 
-    public static <T> Optional<T> find(Iterator<T> elements, T elem) {
-        while (elements.hasNext()) {
-            var element = elements.next();
-            if (element.equals(elem))
-                return Optional.of(element);
-        }
-        return Optional.empty();
-    }
-
     public static <T extends HasId> int findIndex(String id, Iterator<T> elements) {
         int index = 0;
         while (elements.hasNext()) {
@@ -53,15 +44,6 @@ public final class Utils {
             index++;
         }
         return -1;
-    }
-
-    public static <T extends HasId> Optional<Position<T>> findPosition(String id, Traversal<T> positions) {
-        while (positions.hasNext()) {
-            var position = positions.next();
-            if (position.getElem().getId().equals(id))
-                return Optional.of(position);
-        }
-        return Optional.empty();
     }
 
     public static <T> Optional<Position<T>> findPosition(Traversal<T> positions, T elem) {

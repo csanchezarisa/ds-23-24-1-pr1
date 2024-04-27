@@ -1,11 +1,11 @@
 package uoc.ds.pr.model;
 
-import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.adt.sequential.StackArrayImpl;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
 import uoc.ds.pr.exceptions.NoAccommodationAvailableException;
+import uoc.ds.pr.exceptions.ParkingFullException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
 import uoc.ds.pr.model.interfaces.HasId;
@@ -24,11 +24,12 @@ public class Voyage implements HasId {
     private final int maxParkingReservations;
     private final StackArrayImpl<ParkingReservation> loadedParkingReservations;
     private int parkingReservations = 0;
-    private String id;
-    private Date departureDt;
-    private Date arrivalDt;
-    private Ship ship;
-    private Route route;
+    private final String id;
+    private final Date departureDt;
+    private final Date arrivalDt;
+    private final Ship ship;
+    private final Route route;
+    private boolean landingDone = false;
 
     public Voyage(String id, Date departureDt, Date arrivalDt, Ship ship, Route route) {
         this.id = id;
@@ -65,7 +66,11 @@ public class Voyage implements HasId {
         return departureDt;
     }
 
-    public void addReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException {
+    public boolean isLandingDone() {
+        return landingDone;
+    }
+
+    public void addReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException, ParkingFullException {
 
         validateReservation(reservation);
 
@@ -87,7 +92,7 @@ public class Voyage implements HasId {
         }
     }
 
-    private void validateReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException {
+    private void validateReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException, ParkingFullException {
         if (existsReservation(reservation)) throw new ReservationAlreadyExistsException();
 
         boolean noAccommodationAvailable = switch (reservation.getAccommodationType()) {
@@ -96,6 +101,8 @@ public class Voyage implements HasId {
             case CABIN4 -> getAvailableCabin4() == 0;
         };
         if (noAccommodationAvailable) throw new NoAccommodationAvailableException(reservation.getAccommodationType());
+
+        if (reservation.hasParkingLot() && getAvailableParkingSlots() == 0) throw new ParkingFullException();
     }
 
     private void insertArmChairReservation(Reservation reservation) {
@@ -146,6 +153,19 @@ public class Voyage implements HasId {
         };
     }
 
+    public Optional<Reservation> vehicleReservation(String idVehicle) {
+        var r = this.reservations.values();
+
+        while (r.hasNext()) {
+            Reservation reservation = r.next();
+            if (reservation.hasParkingLot() && reservation.getIdVehicle().equals(idVehicle)) {
+                return Optional.of(reservation);
+            }
+        }
+
+        return Optional.empty();
+    }
+
     public boolean existsReservation(Reservation reservation) {
         var clients = reservation.getClients().values();
         while (clients.hasNext()) {
@@ -167,11 +187,11 @@ public class Voyage implements HasId {
     }
 
     public void loadReservation(Client client, Date loadDate) throws ReservationNotFoundException {
-        Position<Reservation> reservationPos = findReservation(client)
+        Reservation reservation = findReservation(client)
                 .orElseThrow(() -> new ReservationNotFoundException(client.getId(), id));
-        Reservation reservation = reservationPos.getElem();
 
-        if (reservation instanceof ParkingReservation parkingReservation) {
+        if (reservation instanceof ParkingReservation parkingReservation
+                && !Utils.exists(loadedParkingReservations.values(), parkingReservation)) {
             parkingReservation.setLoadedDate(loadDate);
             loadedParkingReservations.push(parkingReservation);
         }
@@ -189,15 +209,17 @@ public class Voyage implements HasId {
             count++;
         }
 
+        landingDone = true;
+
         return unLoadReservations.values();
     }
 
-    private Optional<Position<Reservation>> findReservation(Client client) {
-        var positions = reservations.positions();
-        while (positions.hasNext()) {
-            var pos = positions.next();
-            if (Utils.exists(pos.getElem().getClients().values(), client))
-                return Optional.of(pos);
+    private Optional<Reservation> findReservation(Client client) {
+        var reservationIt = reservations.values();
+        while (reservationIt.hasNext()) {
+            var reservation = reservationIt.next();
+            if (Utils.exists(reservation.getClients().values(), client))
+                return Optional.of(reservation);
         }
         return Optional.empty();
     }

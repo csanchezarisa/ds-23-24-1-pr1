@@ -7,10 +7,10 @@ import uoc.ds.pr.util.Utils;
 
 public class Route implements HasId {
 
-    private String id;
-    private String beginningPort;
-    private String arrivalPort;
-    private LinkedList<Voyage> voyages = new LinkedList<>();
+    private final String id;
+    private final String beginningPort;
+    private final String arrivalPort;
+    private final LinkedList<Voyage> voyages = new LinkedList<>();
 
     public Route(String id, String beginningPort, String arrivalPort) {
         this.id = id;

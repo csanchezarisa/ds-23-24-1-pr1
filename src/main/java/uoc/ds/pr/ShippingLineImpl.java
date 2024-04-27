@@ -1,6 +1,5 @@
 package uoc.ds.pr;
 
-import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.exceptions.*;
@@ -61,18 +60,10 @@ public class ShippingLineImpl implements ShippingLine {
     public void addVoyage(String id, Date departureDt, Date arrivalDt, String idShip, String idRoute)
             throws ShipNotFoundException, RouteNotFoundException {
 
-        int shipIdx = Utils.findIndex(idShip, ships.values());
-        int routeIdx = Utils.findIndex(idRoute, routes.values());
-
-        if (shipIdx == -1) {
-            throw new ShipNotFoundException(idShip);
-        }
-        if (routeIdx == -1) {
-            throw new RouteNotFoundException(idRoute);
-        }
-
-        Ship ship = ships.get(shipIdx);
-        Route route = routes.get(routeIdx);
+        Ship ship = Utils.find(idShip, ships.values())
+                .orElseThrow(() -> new ShipNotFoundException(idShip));
+        Route route = Utils.find(idRoute, routes.values())
+                .orElseThrow(() -> new RouteNotFoundException(idRoute));
 
         Voyage voyage = new Voyage(id, departureDt, arrivalDt, ship, route);
 
@@ -90,21 +81,16 @@ public class ShippingLineImpl implements ShippingLine {
     public void reserve(String[] clients, String idVoyage, AccommodationType accommodationType, String idVehicle, double price) throws ClientNotFoundException, VoyageNotFoundException, ParkingFullException, NoAccommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException {
 
         // 1. Validate voyage exists
-        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+        Voyage voyage = Utils.find(idVoyage, voyages.values())
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
-        Voyage voyage = voyagePos.getElem();
 
         // 2. Validate Voyage and Clients exist
         LinkedList<Client> reservationClients = new LinkedList<>();
-        Position<Client>[] clientPositions = new Position[clients.length];
 
-        for (int i = 0; i < clients.length; i++) {
-            String clientId = clients[i];
-            var clientPos = Utils.findPosition(clientId, this.clients.positions())
+        for (String clientId : clients) {
+            Utils.find(clientId, this.clients.values())
+                    .map(reservationClients::insertEnd)
                     .orElseThrow(() -> new ClientNotFoundException(clientId));
-
-            reservationClients.insertEnd(clientPos.getElem());
-            clientPositions[i] = clientPos;
         }
 
         // 3. Validate number of clients
@@ -124,24 +110,28 @@ public class ShippingLineImpl implements ShippingLine {
 
         voyage.addReservation(reservation);
 
-        for (var clientPos : clientPositions) {
-            Client client = clientPos.getElem();
-            client.addReservation(reservation);
+        var clientIt = reservationClients.values();
+        while (clientIt.hasNext()) {
+            Client client = clientIt.next();
+
             client.addVoyage(voyage);
+
+            Reservation newReservation = reservation.clone();
+            LinkedList<Client> newReservationClient = new LinkedList<>();
+            newReservationClient.insertEnd(client);
+            client.addReservation(newReservation);
         }
     }
 
     @Override
     public void load(String idClient, String idVoyage, Date dt) throws LoadingAlreadyException, ClientNotFoundException, VoyageNotFoundException, ReservationNotFoundException {
         // 1. Validate client exists
-        Position<Client> clientPos = Utils.findPosition(idClient, clients.positions())
+        Client client = Utils.find(idClient, clients.values())
                 .orElseThrow(() -> new ClientNotFoundException(idClient));
-        Client client = clientPos.getElem();
 
         // 2. Validate voyage exists
-        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+        Voyage voyage = Utils.find(idVoyage, voyages.values())
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
-        Voyage voyage = voyagePos.getElem();
 
         // 3. Reservation exists
         if (!client.containsReservation(voyage)) throw new ReservationNotFoundException(idClient, idVoyage);
@@ -153,25 +143,29 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> unload(String idVoyage) throws VoyageNotFoundException {
-        // 1. Validate voyage exists
-        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+        return Utils.find(idVoyage, voyages.values())
+                .map(Voyage::unload)
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
-        Voyage voyage = voyagePos.getElem();
-
-        return voyage.unload();
     }
 
     @Override
     public int unloadTime(String idVehicle, String idVoyage) throws LandingNotDoneException, VoyageNotFoundException, VehicleNotFoundException {
-        return 0;
+        Voyage voyage = Utils.find(idVoyage, voyages.values())
+                .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
+
+        if (!voyage.isLandingDone()) throw new LandingNotDoneException(idVoyage);
+
+        return voyage.vehicleReservation(idVehicle)
+                .map(r -> (ParkingReservation) r)
+                .orElseThrow(() -> new VehicleNotFoundException(idVehicle))
+                .getUnLoadTimeInMinutes();
     }
 
     @Override
     public Iterator<Reservation> getClientReservations(String idClient) throws NoReservationException {
-        // 1. Validate client exists
-        Position<Client> clientPos = Utils.findPosition(idClient, clients.positions())
+        var reservations = Utils.find(idClient, clients.values())
+                .map(Client::reservations)
                 .orElseThrow(NoReservationException::new);
-        var reservations = clientPos.getElem().reservations();
 
         if (!reservations.hasNext()) throw new NoReservationException();
 
@@ -180,10 +174,9 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getVoyageReservations(String idVoyage) throws NoReservationException {
-        // 1. Validate voyage exists
-        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+        var reservations = Utils.find(idVoyage, voyages.values())
+                .map(Voyage::reservations)
                 .orElseThrow(NoReservationException::new);
-        var reservations = voyagePos.getElem().reservations();
 
         if (!reservations.hasNext()) throw new NoReservationException();
 
@@ -192,10 +185,9 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getAccommodationReservations(String idVoyage, AccommodationType accommodationType) throws NoReservationException {
-        // 1. Validate voyage exists
-        Position<Voyage> voyagePos = Utils.findPosition(idVoyage, voyages.positions())
+        var reservations = Utils.find(idVoyage, voyages.values())
+                .map(v -> v.reservations(accommodationType))
                 .orElseThrow(NoReservationException::new);
-        var reservations = voyagePos.getElem().reservations(accommodationType);
 
         if (!reservations.hasNext()) throw new NoReservationException();
 

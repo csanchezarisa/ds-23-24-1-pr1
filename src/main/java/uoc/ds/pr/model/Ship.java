@@ -6,14 +6,14 @@ import uoc.ds.pr.util.Utils;
 
 public class Ship implements HasId {
 
-    private String id;
-    private String name;
-    private int nArmChairs;
-    private int nCabins2;
-    private int nCabins4;
-    private int nParkingSlots;
-    private int unLoadTimeInMinutes;
-    private LinkedList<Voyage> voyages = new LinkedList<>();
+    private final String id;
+    private final String name;
+    private final int nArmChairs;
+    private final int nCabins2;
+    private final int nCabins4;
+    private final int nParkingSlots;
+    private final int unLoadTimeInMinutes;
+    private final LinkedList<Voyage> voyages = new LinkedList<>();
 
     public Ship(String id, String name, int nArmChairs, int nCabins2, int nCabins4, int nParkingSlots, int unLoadTimeInMinutes) {
         this.id = id;

@@ -5,6 +5,7 @@ import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
 import uoc.ds.pr.model.interfaces.HasId;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Reservation implements HasId, Cloneable {
@@ -12,9 +13,9 @@ public abstract class Reservation implements HasId, Cloneable {
     private final String id = UUID.randomUUID().toString();
     private LinkedList<Client> clients;
     private Voyage voyage;
-    private ShippingLine.AccommodationType accommodationType;
-    private double price;
-    private String idVehicle;
+    private final ShippingLine.AccommodationType accommodationType;
+    private final double price;
+    private final String idVehicle;
     private boolean loaded = false;
 
     protected Reservation(LinkedList<Client> clients, Voyage voyage, ShippingLine.AccommodationType accommodationType, double price, String idVehicle) {
@@ -70,11 +71,18 @@ public abstract class Reservation implements HasId, Cloneable {
         return clients.size();
     }
 
-    public double getPrice() {
-        return price;
+    public abstract boolean hasParkingLot();
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Reservation r)) return false;
+        return id.equals(r.id);
     }
 
-    public abstract boolean hasParkingLot();
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Override
     public String toString() {
