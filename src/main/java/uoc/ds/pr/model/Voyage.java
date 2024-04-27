@@ -32,6 +32,19 @@ public class Voyage implements HasId {
     private final Route route;
     private boolean landingDone = false;
 
+    public Voyage(String id) {
+        this.id = id;
+        this.armChairReservations = null;
+        this.cabin2Reservations = null;
+        this.cabin4Reservations = null;
+        this.maxParkingReservations = 0;
+        this.loadedParkingReservations = null;
+        this.departureDt = null;
+        this.arrivalDt = null;
+        this.ship = null;
+        this.route = null;
+    }
+
     public Voyage(String id, Date departureDt, Date arrivalDt, Ship ship, Route route) {
         this.id = id;
         this.departureDt = departureDt;
@@ -80,7 +93,6 @@ public class Voyage implements HasId {
         }
 
         if (reservation instanceof ParkingReservation) {
-            reservations.insertEnd(reservation);
             parkingReservations++;
         }
     }

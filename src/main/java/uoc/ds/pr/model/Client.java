@@ -17,6 +17,10 @@ public class Client implements HasId {
     private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
     private final DSLinkedList<Reservation> reservations = new DSLinkedList<>();
 
+    public Client(String id) {
+        this(id, null, null);
+    }
+
     public Client(String id, String name, String surname) {
         this.id = id;
         this.name = name;

@@ -14,6 +14,10 @@ public class Ship implements HasId {
     private final int unLoadTimeInMinutes;
     private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
 
+    public Ship(String id) {
+        this(id, null, 0, 0, 0, 0, 0);
+    }
+
     public Ship(String id, String name, int nArmChairs, int nCabins2, int nCabins4, int nParkingSlots, int unLoadTimeInMinutes) {
         this.id = id;
         this.name = name;

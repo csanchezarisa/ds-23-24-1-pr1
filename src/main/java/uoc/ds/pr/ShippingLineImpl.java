@@ -6,7 +6,6 @@ import uoc.ds.pr.model.*;
 import uoc.ds.pr.util.DSArray;
 import uoc.ds.pr.util.DSLinkedList;
 import uoc.ds.pr.util.OrderedVector;
-import uoc.ds.pr.util.Utils;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -60,9 +59,9 @@ public class ShippingLineImpl implements ShippingLine {
     public void addVoyage(String id, Date departureDt, Date arrivalDt, String idShip, String idRoute)
             throws ShipNotFoundException, RouteNotFoundException {
 
-        Ship ship = Utils.find(idShip, ships.values())
+        Ship ship = ships.find(new Ship(idShip))
                 .orElseThrow(() -> new ShipNotFoundException(idShip));
-        Route route = Utils.find(idRoute, routes.values())
+        Route route = routes.find(new Route(idRoute))
                 .orElseThrow(() -> new RouteNotFoundException(idRoute));
 
         Voyage voyage = new Voyage(id, departureDt, arrivalDt, ship, route);
@@ -81,14 +80,14 @@ public class ShippingLineImpl implements ShippingLine {
     public void reserve(String[] clients, String idVoyage, AccommodationType accommodationType, String idVehicle, double price) throws ClientNotFoundException, VoyageNotFoundException, ParkingFullException, NoAccommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException {
 
         // 1. Validate voyage exists
-        Voyage voyage = Utils.find(idVoyage, voyages.values())
+        Voyage voyage = voyages.find(new Voyage(idVoyage))
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
 
         // 2. Validate Voyage and Clients exist
         DSLinkedList<Client> reservationClients = new DSLinkedList<>();
 
         for (String clientId : clients) {
-            Utils.find(clientId, this.clients.values())
+            this.clients.find(new Client(clientId))
                     .map(reservationClients::insertEnd)
                     .orElseThrow(() -> new ClientNotFoundException(clientId));
         }
@@ -126,11 +125,11 @@ public class ShippingLineImpl implements ShippingLine {
     @Override
     public void load(String idClient, String idVoyage, Date dt) throws LoadingAlreadyException, ClientNotFoundException, VoyageNotFoundException, ReservationNotFoundException {
         // 1. Validate client exists
-        Client client = Utils.find(idClient, clients.values())
+        Client client = clients.find(new Client(idClient))
                 .orElseThrow(() -> new ClientNotFoundException(idClient));
 
         // 2. Validate voyage exists
-        Voyage voyage = Utils.find(idVoyage, voyages.values())
+        Voyage voyage = voyages.find(new Voyage(idVoyage))
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
 
         // 3. Reservation exists
@@ -143,14 +142,14 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> unload(String idVoyage) throws VoyageNotFoundException {
-        return Utils.find(idVoyage, voyages.values())
+        return voyages.find(new Voyage(idVoyage))
                 .map(Voyage::unload)
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
     }
 
     @Override
     public int unloadTime(String idVehicle, String idVoyage) throws LandingNotDoneException, VoyageNotFoundException, VehicleNotFoundException {
-        Voyage voyage = Utils.find(idVoyage, voyages.values())
+        Voyage voyage = voyages.find(new Voyage(idVoyage))
                 .orElseThrow(() -> new VoyageNotFoundException(idVoyage));
 
         if (!voyage.isLandingDone()) throw new LandingNotDoneException(idVoyage);
@@ -163,7 +162,7 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getClientReservations(String idClient) throws NoReservationException {
-        var reservations = Utils.find(idClient, clients.values())
+        var reservations = clients.find(new Client(idClient))
                 .map(Client::reservations)
                 .orElseThrow(NoReservationException::new);
 
@@ -174,7 +173,7 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getVoyageReservations(String idVoyage) throws NoReservationException {
-        var reservations = Utils.find(idVoyage, voyages.values())
+        var reservations = voyages.find(new Voyage(idVoyage))
                 .map(Voyage::reservations)
                 .orElseThrow(NoReservationException::new);
 
@@ -185,7 +184,7 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Iterator<Reservation> getAccommodationReservations(String idVoyage, AccommodationType accommodationType) throws NoReservationException {
-        var reservations = Utils.find(idVoyage, voyages.values())
+        var reservations = voyages.find(new Voyage(idVoyage))
                 .map(v -> v.reservations(accommodationType))
                 .orElseThrow(NoReservationException::new);
 
@@ -212,22 +211,22 @@ public class ShippingLineImpl implements ShippingLine {
 
     @Override
     public Ship getShip(String id) {
-        return Utils.find(id, ships.values()).orElse(null);
+        return ships.find(new Ship(id)).orElse(null);
     }
 
     @Override
     public Route getRoute(String idRoute) {
-        return Utils.find(idRoute, routes.values()).orElse(null);
+        return routes.find(new Route(idRoute)).orElse(null);
     }
 
     @Override
     public Client getClient(String id) {
-        return Utils.find(id, clients.values()).orElse(null);
+        return clients.find(new Client(id)).orElse(null);
     }
 
     @Override
     public Voyage getVoyage(String id) {
-        return Utils.find(id, voyages.values()).orElse(null);
+        return voyages.find(new Voyage(id)).orElse(null);
     }
 
     @Override

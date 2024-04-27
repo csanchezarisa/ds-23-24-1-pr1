@@ -11,6 +11,10 @@ public class Route implements HasId {
     private final String arrivalPort;
     private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
 
+    public Route(String id) {
+        this(id, null, null);
+    }
+
     public Route(String id, String beginningPort, String arrivalPort) {
         this.id = id;
         this.beginningPort = beginningPort;

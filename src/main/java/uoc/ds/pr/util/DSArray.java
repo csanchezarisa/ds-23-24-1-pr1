@@ -22,10 +22,9 @@ public class DSArray<E> implements FiniteContainer<E>, Findable<E> {
     }
 
     public void add(E e) {
-        elems[n] = e;
+        if (isFull()) return;
 
-        if (n != elems.length - 1)
-            n++;
+        elems[n++] = e;
     }
 
     public void modify(int index, E e) {
@@ -59,7 +58,7 @@ public class DSArray<E> implements FiniteContainer<E>, Findable<E> {
 
     @Override
     public boolean isFull() {
-        return n >= elems.length - 1;
+        return n >= elems.length;
     }
 
     @Override
