@@ -2,13 +2,12 @@ package uoc.ds.pr.model;
 
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
-import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class Reservation implements HasId, Cloneable {
+public abstract class Reservation implements Cloneable {
 
     private final String id = UUID.randomUUID().toString();
     private DSLinkedList<Client> clients;
@@ -26,7 +25,6 @@ public abstract class Reservation implements HasId, Cloneable {
         this.idVehicle = idVehicle;
     }
 
-    @Override
     public String getId() {
         return id;
     }

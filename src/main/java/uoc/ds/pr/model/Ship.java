@@ -1,9 +1,8 @@
 package uoc.ds.pr.model;
 
-import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.DSLinkedList;
 
-public class Ship implements HasId {
+public class Ship {
 
     private final String id;
     private final String name;
@@ -28,7 +27,6 @@ public class Ship implements HasId {
         this.unLoadTimeInMinutes = unLoadTimeInMinutes;
     }
 
-    @Override
     public String getId() {
         return id;
     }

@@ -4,12 +4,11 @@ import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.exceptions.LoadingAlreadyException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
-import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.DSLinkedList;
 
 import java.util.Optional;
 
-public class Client implements HasId {
+public class Client {
 
     private final String id;
     private final String name;
@@ -27,7 +26,6 @@ public class Client implements HasId {
         this.surname = surname;
     }
 
-    @Override
     public String getId() {
         return id;
     }

@@ -1,10 +1,8 @@
 package uoc.ds.pr.model;
 
-
-import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.DSLinkedList;
 
-public class Route implements HasId {
+public class Route {
 
     private final String id;
     private final String beginningPort;
@@ -21,7 +19,6 @@ public class Route implements HasId {
         this.arrivalPort = arrivalPort;
     }
 
-    @Override
     public String getId() {
         return id;
     }

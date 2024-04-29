@@ -8,7 +8,6 @@ import uoc.ds.pr.exceptions.NoAccommodationAvailableException;
 import uoc.ds.pr.exceptions.ParkingFullException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
-import uoc.ds.pr.model.interfaces.HasId;
 import uoc.ds.pr.util.DSLinkedList;
 import uoc.ds.pr.util.FiniteLinkedList;
 import uoc.ds.pr.util.Utils;
@@ -16,7 +15,7 @@ import uoc.ds.pr.util.Utils;
 import java.util.Date;
 import java.util.Optional;
 
-public class Voyage implements HasId {
+public class Voyage {
 
     private final DSLinkedList<Reservation> reservations = new DSLinkedList<>();
     private final FiniteLinkedList<Reservation> armChairReservations;
@@ -59,7 +58,6 @@ public class Voyage implements HasId {
         loadedParkingReservations = new StackArrayImpl<>(ship.getnParkingSlots());
     }
 
-    @Override
     public String getId() {
         return id;
     }
