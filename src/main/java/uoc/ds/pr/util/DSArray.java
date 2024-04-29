@@ -3,6 +3,7 @@ package uoc.ds.pr.util;
 import edu.uoc.ds.adt.sequential.FiniteContainer;
 import edu.uoc.ds.traversal.Iterator;
 import edu.uoc.ds.traversal.IteratorArrayImpl;
+import uoc.ds.pr.util.interfaces.Findable;
 
 import java.util.Optional;
 

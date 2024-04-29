@@ -2,6 +2,7 @@ package uoc.ds.pr.util;
 
 import edu.uoc.ds.adt.helpers.Position;
 import edu.uoc.ds.adt.sequential.LinkedList;
+import uoc.ds.pr.util.interfaces.Findable;
 
 import java.util.Optional;
 

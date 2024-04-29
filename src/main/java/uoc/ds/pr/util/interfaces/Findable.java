@@ -1,4 +1,4 @@
-package uoc.ds.pr.util;
+package uoc.ds.pr.util.interfaces;
 
 import java.util.Optional;
 
