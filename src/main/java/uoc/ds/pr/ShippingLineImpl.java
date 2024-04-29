@@ -17,8 +17,8 @@ public class ShippingLineImpl implements ShippingLine {
     private final DSArray<Route> routes = new DSArray<>();
     private final DSLinkedList<Client> clients = new DSLinkedList<>();
     private final DSLinkedList<Voyage> voyages = new DSLinkedList<>();
-    private final OrderedVector<Client> mostTraveledClients = new OrderedVector<>(Comparator.comparingInt(Client::countLoadedReservations));
-    private final OrderedVector<Route> mostTraveledRoutes = new OrderedVector<>(Comparator.comparingInt(Route::numVoyages)
+    private final OrderedVector<Client> mostTraveledClients = new OrderedVector<>(1, Comparator.comparingInt(Client::countLoadedReservations));
+    private final OrderedVector<Route> mostTraveledRoutes = new OrderedVector<>(1, Comparator.comparingInt(Route::numVoyages)
             .thenComparing(Route::getId));
 
     @Override
@@ -106,6 +106,16 @@ public class ShippingLineImpl implements ShippingLine {
         } else {
             reservation = new NormalReservation(reservationClients, voyage, accommodationType, price, idVehicle);
         }
+
+        // 4. Validate availability
+        boolean noAccommodationAvailable = switch (reservation.getAccommodationType()) {
+            case ARMCHAIR -> reservation.numClients() > voyage.getAvailableArmChairs();
+            case CABIN2 -> voyage.getAvailableCabin2() == 0;
+            case CABIN4 -> voyage.getAvailableCabin4() == 0;
+        };
+        if (noAccommodationAvailable) throw new NoAccommodationAvailableException(reservation.getAccommodationType());
+
+        if (reservation.hasParkingLot() && voyage.getAvailableParkingSlots() == 0) throw new ParkingFullException();
 
         voyage.addReservation(reservation);
 

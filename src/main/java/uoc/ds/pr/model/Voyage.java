@@ -4,8 +4,6 @@ import edu.uoc.ds.adt.sequential.LinkedList;
 import edu.uoc.ds.adt.sequential.StackArrayImpl;
 import edu.uoc.ds.traversal.Iterator;
 import uoc.ds.pr.ShippingLine;
-import uoc.ds.pr.exceptions.NoAccommodationAvailableException;
-import uoc.ds.pr.exceptions.ParkingFullException;
 import uoc.ds.pr.exceptions.ReservationAlreadyExistsException;
 import uoc.ds.pr.exceptions.ReservationNotFoundException;
 import uoc.ds.pr.util.DSLinkedList;
@@ -74,9 +72,9 @@ public class Voyage {
         return landingDone;
     }
 
-    public void addReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException, ParkingFullException {
+    public void addReservation(Reservation reservation) throws ReservationAlreadyExistsException {
 
-        validateReservation(reservation);
+        if (existsReservation(reservation)) throw new ReservationAlreadyExistsException();
 
         switch (reservation.getAccommodationType()) {
             case ARMCHAIR -> insertArmChairReservation(reservation);
@@ -93,19 +91,6 @@ public class Voyage {
         if (reservation instanceof ParkingReservation) {
             parkingReservations++;
         }
-    }
-
-    private void validateReservation(Reservation reservation) throws ReservationAlreadyExistsException, NoAccommodationAvailableException, ParkingFullException {
-        if (existsReservation(reservation)) throw new ReservationAlreadyExistsException();
-
-        boolean noAccommodationAvailable = switch (reservation.getAccommodationType()) {
-            case ARMCHAIR -> reservation.numClients() > getAvailableArmChairs();
-            case CABIN2 -> getAvailableCabin2() == 0;
-            case CABIN4 -> getAvailableCabin4() == 0;
-        };
-        if (noAccommodationAvailable) throw new NoAccommodationAvailableException(reservation.getAccommodationType());
-
-        if (reservation.hasParkingLot() && getAvailableParkingSlots() == 0) throw new ParkingFullException();
     }
 
     private void insertArmChairReservation(Reservation reservation) {
