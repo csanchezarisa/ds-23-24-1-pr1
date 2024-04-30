@@ -11,7 +11,7 @@ import uoc.ds.pr.util.DateUtils;
 
 public class ShippingLinePR1Test {
 
-    protected ShippingLine theShippingLine;
+    private ShippingLine theShippingLine;
 
     @Before
     public void setUp() throws Exception {
@@ -106,8 +106,8 @@ public class ShippingLinePR1Test {
     public void addVoyageTest() throws DSException {
 
         Assert.assertThrows(ShipNotFoundException.class, () ->
-        theShippingLine.addVoyage("voyageId1000", DateUtils.createDate("30-07-2024 22:50:00"),
-                DateUtils.createDate("31-07-2024 15:50:00"), "XXXX", "routeId1"));
+                theShippingLine.addVoyage("voyageId1000", DateUtils.createDate("30-07-2024 22:50:00"),
+                        DateUtils.createDate("31-07-2024 15:50:00"), "XXXX", "routeId1"));
 
         Assert.assertThrows(RouteNotFoundException.class, () ->
                 theShippingLine.addVoyage("voyageId1000", DateUtils.createDate("30-07-2024 22:50:00"),
@@ -133,7 +133,7 @@ public class ShippingLinePR1Test {
     public void reserveTest() throws DSException {
         String[] clientsA = {"clientId1" ,"clientId2", "clientId3", "clientId4", "clientId5", "clientId6"};
         Assert.assertThrows(VoyageNotFoundException.class, () ->
-            theShippingLine.reserve(clientsA, "voyageIdXXXX", ShippingLine.AccommodationType.ARMCHAIR,null,200 ));
+                theShippingLine.reserve(clientsA, "voyageIdXXXX", ShippingLine.AccommodationType.ARMCHAIR, null, 200));
 
         String[] clientsX = {"clientId1" ,"clientId99999", "clientId3", "clientId4"};
         Assert.assertThrows(ClientNotFoundException.class, () ->
@@ -170,7 +170,7 @@ public class ShippingLinePR1Test {
         // Client idClient1 already has a reservation
         String[] clientsAx = {"clientId7" ,"clientId1", "clientId10", "clientId11"};
         Assert.assertThrows(ReservationAlreadyExistsException.class, () ->
-          theShippingLine.reserve(clientsAx, "voyageId1", ShippingLine.AccommodationType.ARMCHAIR,null,200 ));
+                theShippingLine.reserve(clientsAx, "voyageId1", ShippingLine.AccommodationType.ARMCHAIR, null, 200));
 
         String[] clientsB = {"clientId7" ,"clientId8"};
         theShippingLine.reserve(clientsB, "voyageId1", ShippingLine.AccommodationType.CABIN2,"B1923AT",200 );
@@ -180,7 +180,7 @@ public class ShippingLinePR1Test {
         Assert.assertEquals(10, voyage1.getAvailableParkingSlots());
 
         String[] clientsC = {"clientId9" ,"clientId10", "clientId11", "clientId12", "clientId13"};
-        Assert.assertThrows(NoAccommodationAvailableException.class, () ->
+        Assert.assertThrows(NoAcommodationAvailableException.class, () ->
                 theShippingLine.reserve(clientsC, "voyageId1", ShippingLine.AccommodationType.ARMCHAIR,null,200 ));
 
         Assert.assertEquals(4, voyage1.getAvailableArmChairs());
@@ -203,8 +203,8 @@ public class ShippingLinePR1Test {
         Assert.assertEquals(10, voyage1.getAvailableParkingSlots());
 
         String[] clientsF = {"clientId15", "clientId16"};
-        Assert.assertThrows(NoAccommodationAvailableException.class, () ->
-            theShippingLine.reserve(clientsF, "voyageId1", ShippingLine.AccommodationType.CABIN2,null,200 ));
+        Assert.assertThrows(NoAcommodationAvailableException.class, () ->
+                theShippingLine.reserve(clientsF, "voyageId1", ShippingLine.AccommodationType.CABIN2, null, 200));
 
         String[] clientsG = {"clientId15", "clientId16", "clientId17"};
         theShippingLine.reserve(clientsG, "voyageId1", ShippingLine.AccommodationType.CABIN4,"8337GYT",200 );
@@ -459,6 +459,60 @@ public class ShippingLinePR1Test {
         Assert.assertTrue(clientsIt.hasNext());
         client = clientsIt.next();
         Assert.assertEquals("clientId2", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId3", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId4", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId5", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId6", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId9", client.getId());
+        Assert.assertTrue(it.hasNext());
+
+        reservation = it.next();
+        Assert.assertEquals(ShippingLine.AccommodationType.ARMCHAIR, reservation.getAccommodationType());
+        client = null;
+        clientsIt = reservation.clients();
+        Assert.assertTrue(clientsIt.hasNext());
+        client = clientsIt.next();
+        Assert.assertEquals("clientId10", client.getId());
         Assert.assertTrue(it.hasNext());
         /// ...
 

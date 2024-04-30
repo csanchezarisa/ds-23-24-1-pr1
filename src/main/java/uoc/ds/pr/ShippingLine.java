@@ -34,7 +34,7 @@ public interface ShippingLine {
 
     void reserve(String[] clients, String idVoyage, AccommodationType accommodationType, String idVehicle, double price)
             throws ClientNotFoundException, VoyageNotFoundException, ParkingFullException,
-            NoAccommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException;
+            NoAcommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException;
 
     void load(String idClient, String idVoyage, Date dt) throws
             LoadingAlreadyException, ClientNotFoundException, VoyageNotFoundException, ReservationNotFoundException;

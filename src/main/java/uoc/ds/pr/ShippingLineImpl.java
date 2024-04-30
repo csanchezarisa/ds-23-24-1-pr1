@@ -77,7 +77,7 @@ public class ShippingLineImpl implements ShippingLine {
     }
 
     @Override
-    public void reserve(String[] clients, String idVoyage, AccommodationType accommodationType, String idVehicle, double price) throws ClientNotFoundException, VoyageNotFoundException, ParkingFullException, NoAccommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException {
+    public void reserve(String[] clients, String idVoyage, AccommodationType accommodationType, String idVehicle, double price) throws ClientNotFoundException, VoyageNotFoundException, ParkingFullException, NoAcommodationAvailableException, MaxExceededException, ReservationAlreadyExistsException {
 
         // 1. Validate voyage exists
         Voyage voyage = voyages.find(new Voyage(idVoyage))
@@ -113,7 +113,7 @@ public class ShippingLineImpl implements ShippingLine {
             case CABIN2 -> voyage.getAvailableCabin2() == 0;
             case CABIN4 -> voyage.getAvailableCabin4() == 0;
         };
-        if (noAccommodationAvailable) throw new NoAccommodationAvailableException(reservation.getAccommodationType());
+        if (noAccommodationAvailable) throw new NoAcommodationAvailableException(reservation.getAccommodationType());
 
         if (reservation.hasParkingLot() && voyage.getAvailableParkingSlots() == 0) throw new ParkingFullException();
 
