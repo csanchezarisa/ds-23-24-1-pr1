@@ -42,6 +42,10 @@ public class Route {
         return voyages.size();
     }
 
+    public void deleteVoyage(Voyage voyage) {
+        voyages.findPosition(voyage).ifPresent(voyages::delete);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Route r)) return false;

@@ -13,4 +13,5 @@
 - New tests added:
   - `DsArrayTest`: To test DSArray data structure implementation.
   - `DsLinkedListTest`: To test DSLinkedList data structure implementation.
-  - `ShippingLinePR1TestV2`: To test `unloadTime` method.
+  - `ShippingLinePR1TestV2`: To test `unloadTime` method, some exceptions and how a voyage is updated when changing
+    route or ship.

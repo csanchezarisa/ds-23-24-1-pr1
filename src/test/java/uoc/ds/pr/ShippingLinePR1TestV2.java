@@ -4,9 +4,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import uoc.ds.pr.exceptions.LandingNotDoneException;
-import uoc.ds.pr.exceptions.VehicleNotFoundException;
-import uoc.ds.pr.exceptions.VoyageNotFoundException;
+import uoc.ds.pr.exceptions.*;
+import uoc.ds.pr.model.Route;
+import uoc.ds.pr.model.Ship;
+import uoc.ds.pr.model.Voyage;
 import uoc.ds.pr.util.DateUtils;
 
 public class ShippingLinePR1TestV2 {
@@ -28,7 +29,67 @@ public class ShippingLinePR1TestV2 {
     }
 
     @Test
-    public void unloadTimeTest() throws Exception {
+    public void addVoyageTest() throws DSException {
+        // Assert that a voyage is removed when updating ship/route
+        theShippingLine.addVoyage("voyageId2000", DateUtils.createDate("30-07-2024 22:50:00"),
+                DateUtils.createDate("31-07-2024 15:50:00"), "shipId1", "routeId5");
+        Voyage voyage2000 = theShippingLine.getVoyage("voyageId2000");
+        Ship firstShip = voyage2000.getShip();
+        Route firstRoute = voyage2000.getRoute();
+        Assert.assertEquals("shipId1", firstShip.getId());
+        Assert.assertEquals(1, firstShip.numVoyages());
+        Assert.assertEquals("routeId5", firstRoute.getId());
+        Assert.assertEquals(1, firstRoute.numVoyages());
+
+        // Update voyage change ship
+        theShippingLine.addVoyage("voyageId2000", DateUtils.createDate("30-07-2024 22:50:00"),
+                DateUtils.createDate("31-07-2024 15:50:00"), "shipId2", "routeId5");
+        voyage2000 = theShippingLine.getVoyage("voyageId2000");
+        Ship secondShip = voyage2000.getShip();
+        Assert.assertEquals("shipId2", secondShip.getId());
+        Assert.assertEquals(2, secondShip.numVoyages());
+        Assert.assertNotEquals(firstShip, secondShip);
+        Assert.assertEquals(0, firstShip.numVoyages());
+        Assert.assertEquals(firstRoute, voyage2000.getRoute());
+        Assert.assertEquals(1, voyage2000.getRoute().numVoyages());
+
+        // Update voyage change route
+        theShippingLine.addVoyage("voyageId2000", DateUtils.createDate("30-07-2024 22:50:00"),
+                DateUtils.createDate("31-07-2024 15:50:00"), "shipId2", "routeId3");
+        voyage2000 = theShippingLine.getVoyage("voyageId2000");
+        Route secondRoute = voyage2000.getRoute();
+        Assert.assertEquals("shipId2", voyage2000.getShip().getId());
+        Assert.assertEquals(secondShip, voyage2000.getShip());
+        Assert.assertEquals(2, voyage2000.getShip().numVoyages());
+        Assert.assertEquals("routeId3", secondRoute.getId());
+        Assert.assertEquals(1, secondRoute.numVoyages());
+        Assert.assertNotEquals(firstRoute, secondRoute);
+        Assert.assertEquals(0, firstRoute.numVoyages());
+    }
+
+    @Test
+    public void parkingFullExceptionTest() throws DSException {
+        theShippingLine.addShip("shipId1000", "Test", 100, 100, 100, 1, 5);
+        theShippingLine.addVoyage("voyageId2000", DateUtils.createDate("30-07-2024 22:50:00"),
+                DateUtils.createDate("31-07-2024 15:50:00"), "shipId1000", "routeId1");
+
+        Ship ship = this.theShippingLine.getShip("shipId1000");
+        Assert.assertEquals(1, ship.getnParkingSlots());
+
+        Voyage voyage1 = theShippingLine.getVoyage("voyageId2000");
+        Assert.assertEquals(1, voyage1.getAvailableParkingSlots());
+
+        String[] clientsA = {"clientId1", "clientId2"};
+        theShippingLine.reserve(clientsA, "voyageId2000", ShippingLine.AccommodationType.CABIN2, "2251VV", 200);
+        Assert.assertEquals(0, voyage1.getAvailableParkingSlots());
+
+        String[] clientsAx = {"clientId7", "clientId1", "clientId10", "clientId11"};
+        Assert.assertThrows(ParkingFullException.class, () ->
+                theShippingLine.reserve(clientsAx, "voyageId2000", ShippingLine.AccommodationType.CABIN4, "B1923AT", 200));
+    }
+
+    @Test
+    public void unloadTimeTest() throws DSException {
         Assert.assertThrows(VoyageNotFoundException.class,
                 () -> theShippingLine.unloadTime("vehicleId1", "voyageIdXXXX"));
 
@@ -62,5 +123,11 @@ public class ShippingLinePR1TestV2 {
 
         Assert.assertEquals(7, theShippingLine.unloadTime("2251VV", "voyageId1"));
         Assert.assertEquals(14, theShippingLine.unloadTime("B1923AT", "voyageId1"));
+    }
+
+    @Test
+    public void getMostTraveledRouteException() {
+        theShippingLine = new ShippingLineImpl();
+        Assert.assertThrows(NoRouteException.class, () -> theShippingLine.getMostTraveledRoute());
     }
 }

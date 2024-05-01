@@ -68,8 +68,15 @@ public class ShippingLineImpl implements ShippingLine {
 
         voyages.findPosition(voyage)
                 .ifPresentOrElse(
-                        p -> voyages.update(p, voyage),
-                        () -> voyages.insertEnd(voyage));
+                        p -> {
+                            // Remove the old voyage from the ship and route
+                            Voyage actualVoyage = p.getElem();
+                            actualVoyage.getShip().deleteVoyage(actualVoyage);
+                            actualVoyage.getRoute().deleteVoyage(actualVoyage);
+                            voyages.update(p, voyage);
+                        },
+                        () -> voyages.insertEnd(voyage)
+                );
 
         ship.addVoyage(voyage);
         route.addVoyage(voyage);

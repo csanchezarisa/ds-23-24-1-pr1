@@ -62,6 +62,14 @@ public class Ship {
                         () -> voyages.insertEnd(voyage));
     }
 
+    public int numVoyages() {
+        return voyages.size();
+    }
+
+    public void deleteVoyage(Voyage voyage) {
+        voyages.findPosition(voyage).ifPresent(voyages::delete);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Ship s)) return false;
